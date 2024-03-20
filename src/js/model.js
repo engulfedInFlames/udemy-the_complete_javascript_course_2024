@@ -9,6 +9,7 @@ export const state = {
     page: 1,
     resultsPerPage: RES_PER_PAGE,
   },
+  bookmarks: [],
 };
 
 export const loadRecipe = async function (id) {
@@ -17,6 +18,9 @@ export const loadRecipe = async function (id) {
 
     // Return nothing, just change the state
     state.recipe = { ...refineRecipeData(data) };
+
+    if (state.bookmarks.find((b) => b.id === id))
+      state.recipe.bookmarked = true;
   } catch (err) {
     throw err;
   }
@@ -64,6 +68,19 @@ export const updateServings = function (newServings) {
   state.recipe.servings = newServings;
 };
 
+export const addBookmark = function (recipe) {
+  state.recipe.bookmarked = true;
+  state.bookmarks.push(recipe);
+};
+
+export const deleteBookmark = function (id) {
+  if (id !== state.recipe.id) return;
+
+  const index = state.bookmarks.findIndex((b) => b.id === id);
+  state.bookmarks.splice(index, 1);
+  state.recipe.bookmarked = false;
+};
+
 function refineRecipeData(data) {
   const {
     data: {
@@ -81,5 +98,5 @@ function refineRecipeData(data) {
   } = data;
   // prettier-ignore
   return { id, image, ingredients, publisher, servings,
-    sourceUrl, title, cookingTime };
+    sourceUrl, title, cookingTime, bookmarked:false };
 }

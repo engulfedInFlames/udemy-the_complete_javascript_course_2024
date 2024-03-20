@@ -25,6 +25,17 @@ class RecipeView extends View {
     });
   }
 
+  addHandlerBookmark(handler) {
+    this._parentElement.addEventListener("click", function (e) {
+      // Event delegation
+      // Find the exact element that was clicked
+      // Find out whether the clicked element is renedered or not
+      const btn = e.target.closest(".btn--bookmark");
+      if (!btn) return;
+      handler();
+    });
+  }
+
   _generateMarkup() {
     // prettier-ignore
     const { image, title, cookingTime, servings, publisher, sourceUrl, ingredients,
@@ -75,9 +86,11 @@ class RecipeView extends View {
           <use href="${iconsUrl}#icon-user"></use>
         </svg>
       </div>
-      <button class="btn--round">
+      <button class="btn--round btn--bookmark">
         <svg class="">
-          <use href="${iconsUrl}#icon-bookmark-fill"></use>
+          <use href="${iconsUrl}#icon-bookmark${
+      this._data.bookmarked ? "-fill" : ""
+    }"></use>
         </svg>
       </button>
     </div>
