@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="shortcut icon" type="image/png" href="/icon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="script.js"></script>
+    <title>mapty // Map your workouts</title>
+  </head>
+  <body>
+    <div class="sidebar">
+      <img src="logo.png" alt="Logo" class="logo" />
+
+      <ul class="workouts">
+        <form class="form hidden">
+          <div class="form__row">
+            <label class="form__label">Type</label>
+            <select class="form__input form__input--type">
+              <option value="running">Running</option>
+              <option value="cycling">Cycling</option>
+            </select>
+          </div>
+          <div class="form__row">
+            <label class="form__label">Distance</label>
+            <input
+              class="form__input form__input--distance"
+              type="number"
+              placeholder="km"
+              min="0"
+              required
+            />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Duration</label>
+            <input
+              class="form__input form__input--duration"
+              type="number"
+              placeholder="min"
+              min="0"
+              required
+            />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Cadence</label>
+            <input
+              class="form__input form__input--cadence"
+              type="number"
+              placeholder="step/min"
+              min="0"
+            />
+          </div>
+          <div class="form__row form__row--hidden">
+            <label class="form__label">Elev Gain</label>
+            <input
+              class="form__input form__input--elevation"
+              type="number"
+              placeholder="meters"
+              min="0"
+            />
+          </div>
+          <button class="form__btn">OK</button>
+        </form>
+        
+        <button  class="btn--delete" type="button" >
+          <span class="btn--delete__text">Clear</span>
+          <span class="btn--delete__icon">»</span>
+        </button>
+
+
+        <!-- <li class="workout workout--running" data-id="1234567890">
+          <div class="workout__header">
+            <h2 class="workout__title">Running on April 14</h2>
+            <div class="workout__close">❌</div>
+          </div>
+          <div class="workout__details">
+            <span class="workout__icon">🏃‍♂️</span>
+            <span class="workout__value">5.2</span>
+            <span class="workout__unit">km</span>
+          </div>
+          <div class="workout__details">
+            <span class="workout__icon">⏱</span>
+            <span class="workout__value">24</span>
+            <span class="workout__unit">min</span>
+          </div>
+          <div class="workout__details">
+            <span class="workout__icon">⚡️</span>
+            <span class="workout__value">4.6</span>
+            <span class="workout__unit">min/km</span>
+          </div>
+          <div class="workout__details">
+            <span class="workout__icon">🦶🏼</span>
+            <span class="workout__value">178</span>
+            <span class="workout__unit">spm</span>
+          </div>
+        </li> -->
+
+
+      <p class="copyright">
+        &copy; Copyright by
+        <a
+          class="twitter-link"
+          target="_blank"
+          href="https://twitter.com/jonasschmedtman"
+          >Jonas Schmedtmann</a
+        >. Use for learning or your portfolio. Don't use to teach. Don't claim
+        as your own.
+      </p>
+    </div>
+    <div id="map"></div>
+
+    <!-- prettier-ignore -->
+    <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+      ({key: "AIzaSyB47zZHmJ7IzaxtgdRuTA9-ARa_PSIFn00", v: "weekly"});</script>
+  </body>
+</html>

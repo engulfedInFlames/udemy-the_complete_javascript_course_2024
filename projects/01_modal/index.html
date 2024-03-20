@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="stylesheet" href="style.css" />
+        <title>モーダル</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="btns">
+                <button type="button" class="show-modal">モーダル表示</button>
+            </div>
+        </div>
+        <div class="modal hidden">
+            <button class="close-modal">&times;</button>
+            <h1>💡モーダルとは？</h1>
+            <p>
+                モーダルとは、ユーザーの操作に応じて表示される小さなウィンドウやダイアログのことで、主にウェブサイトやアプリケーションで見られます。
+                このウィンドウは、情報を表示したり、ユーザーからの入力を促したりするために使われ、背景のコンテンツを暗くして、ユーザーの注意を引きつけます。
+                モーダルは、ユーザー体験を向上させるために設計されており、適切に使用されると、情報の提示やユーザーからのアクションを促すのに非常に効果的です。
+            </p>
+        </div>
+        <div class="overlay hidden"></div>
+
+        <script src="script.js"></script>
+    </body>
+</html>

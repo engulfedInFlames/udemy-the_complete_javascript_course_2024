@@ -1,0 +1,8 @@
+_materials/**/*
+.vscode/**/*
+node_modules/**/*
+.parcel-cache/**/*
+*:Zone.Identifier
+dist/**/*
+
+netlify
