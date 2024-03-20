@@ -1,19 +1,19 @@
 import View from "./View";
 import previewView from "./previewView";
+
 const iconsUrl = new URL("../../img/icons.svg", import.meta.url);
 
-class ResultView extends View {
+class BookmarksView extends View {
   // View has access to the parent element
-  _parentElement = document.querySelector(".results");
-  _data;
-  _errorMessage = "No recipes found for your query! Please try again.";
+  _parentElement = document.querySelector(".bookmarks__list");
+  _errorMessage = "No bookmarks yet. Find a nice recipe and bookmark it 😃";
 
   _generateMarkup() {
     const html = this._data
-      .map((result) => previewView.render(result, false))
+      .map((bookmark) => previewView.render(bookmark, false))
       .join("");
     return this._sanitizeMarkup(html);
   }
 }
 
-export default new ResultView();
+export default new BookmarksView();
