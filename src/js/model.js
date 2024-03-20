@@ -1,6 +1,8 @@
 import { API_URL, RES_PER_PAGE } from "./config";
 import { getJSON } from "./helpers";
 
+// clearBookmarks();
+
 export const state = {
   recipe: {},
   search: {
@@ -71,6 +73,7 @@ export const updateServings = function (newServings) {
 export const addBookmark = function (recipe) {
   state.recipe.bookmarked = true;
   state.bookmarks.push(recipe);
+  persistBookmarks();
 };
 
 export const deleteBookmark = function (id) {
@@ -78,8 +81,22 @@ export const deleteBookmark = function (id) {
 
   const index = state.bookmarks.findIndex((b) => b.id === id);
   state.bookmarks.splice(index, 1);
+  persistBookmarks();
   state.recipe.bookmarked = false;
 };
+
+export function restoreBookmarks() {
+  const storage = localStorage.getItem("bookmarks");
+  if (storage) state.bookmarks = JSON.parse(storage);
+}
+
+function persistBookmarks() {
+  localStorage.setItem("bookmarks", JSON.stringify(state.bookmarks));
+}
+
+function clearBookmarks() {
+  localStorage.clear("bookmarks");
+}
 
 function refineRecipeData(data) {
   const {

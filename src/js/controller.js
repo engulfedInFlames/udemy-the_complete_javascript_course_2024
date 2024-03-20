@@ -69,13 +69,7 @@ const controlBookmark = function () {
 };
 
 const controlBookmarks = function () {
-  const { recipe } = model.state;
-
-  if (!recipe.bookmarked) model.addBookmark(recipe);
-  else model.deleteBookmark(recipe.id);
-
-  recipeView.update(recipe);
-
+  model.restoreBookmarks();
   bookmarksView.render(model.state.bookmarks);
 };
 
@@ -85,6 +79,7 @@ const init = function () {
   recipeView.addHandlerBookmark(controlBookmark);
   searchView.addHandlerRender(controlSearchResults);
   paginationView.addHandlerRender(controlPagination);
+  bookmarksView.addHandlerRender(controlBookmarks);
 };
 
 init();
