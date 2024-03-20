@@ -5,6 +5,7 @@ import recipeView from "./views/recipeView.js";
 import searchView from "./views/searchView.js";
 import resultView from "./views/resultView.js";
 import paginationView from "./views/paginationView.js";
+import bookmarksView from "./views/bookmarksView.js";
 
 const { render } = require("sass");
 
@@ -21,6 +22,7 @@ const controlRecipes = async function () {
     recipeView.renderSpinner();
 
     resultView.update(model.getSearchResultsPage());
+    bookmarksView.update(model.state.bookmarks);
 
     // Loading
     await model.loadRecipe(id);
@@ -56,12 +58,25 @@ const controlServings = function (newServings) {
 };
 
 const controlBookmark = function () {
-  const { recipe } = model.state;
+  const { recipe, bookmarks } = model.state;
   if (!recipe) return;
 
   if (!recipe.bookmarked) model.addBookmark(recipe);
   else model.deleteBookmark(recipe.id);
+
   recipeView.update(recipe);
+  bookmarksView.render(bookmarks);
+};
+
+const controlBookmarks = function () {
+  const { recipe } = model.state;
+
+  if (!recipe.bookmarked) model.addBookmark(recipe);
+  else model.deleteBookmark(recipe.id);
+
+  recipeView.update(recipe);
+
+  bookmarksView.render(model.state.bookmarks);
 };
 
 const init = function () {

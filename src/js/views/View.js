@@ -6,14 +6,17 @@ export default class View {
   _message;
   _errorMessage;
 
-  render(data) {
+  render(data, render = true) {
     this._clear();
 
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
 
     this._data = data;
+
     const markup = this._generateMarkup();
+    if (!render) return markup;
+
     this._parentElement.insertAdjacentHTML("afterbegin", markup);
   }
 
@@ -104,6 +107,6 @@ export default class View {
   }
 
   _clear() {
-    this._parentElement.innerHTML = "";
+    if (this._parentElement) this._parentElement.innerHTML = "";
   }
 }
