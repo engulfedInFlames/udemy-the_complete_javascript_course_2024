@@ -124,21 +124,17 @@ class RecipeView extends View {
     return this._sanitizeMarkup(html);
   }
 
-  _generateMarkupIngredient({
-    iconsUrl,
-    quantity = "",
-    unit = "",
-    description = "",
-  }) {
+  _generateMarkupIngredient({ quantity, unit, description = "" }) {
     return `
       <li class="recipe__ingredient">
         <svg class="recipe__icon">
           <use href="${iconsUrl}#icon-check"></use>
         </svg>
-        <div class="recipe__quantity">${quantity}</div>
+        ${quantity ? `<div class='recipe__quantity'>${quantity}</div>` : ""}
         <div class="recipe__description">
-          <span class="recipe__unit">${unit}</span>
-          ${description}
+        ${
+          unit ? `<span class="recipe__unit">${unit}</span>` : ""
+        } ${description}
         </div>
       </li>`;
   }
