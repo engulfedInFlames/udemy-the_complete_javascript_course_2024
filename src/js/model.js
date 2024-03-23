@@ -87,7 +87,7 @@ export const uploadRecipe = async function (newRecipe) {
       const [quantity, unit, description] = ingArr;
       return { quantity: quantity ? +quantity : null, unit, description };
     });
-  const recipe = {
+  const payload = {
     title: newRecipe.title,
     source_url: newRecipe.sourceUrl,
     image_url: newRecipe.image,
@@ -96,8 +96,8 @@ export const uploadRecipe = async function (newRecipe) {
     servings: +newRecipe.servings,
     ingredients,
   };
-  const { data: recie } = await AJAX(`${API_URL}?key=${API_KEY}`, recipe);
-  state.recipe = refineRecipeData(recie);
+  const { data: recipe } = await AJAX(`${API_URL}?key=${API_KEY}`, payload);
+  state.recipe = refineRecipeData(recipe);
   addBookmark(state.recipe);
 };
 
