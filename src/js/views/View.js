@@ -9,8 +9,7 @@ export default class View {
   render(data, render = true) {
     this._clear();
 
-    if (!data || (Array.isArray(data) && data.length === 0))
-      return this.renderError();
+    if (Array.isArray(data) && data.length === 0) return this.renderError();
 
     this._data = data;
 
