@@ -6,13 +6,19 @@ import searchView from "./views/searchView.js";
 import resultView from "./views/resultView.js";
 import paginationView from "./views/paginationView.js";
 import bookmarksView from "./views/bookmarksView.js";
+import AddRecipeView from "./views/addRecipeView.js";
+import addRecipeView from "./views/addRecipeView.js";
+import { MODAL_CLOSE_SEC } from "./config.js";
 
 const { render } = require("sass");
 
 // https://forkify-api.herokuapp.com/v2
 // To fix
-// 1. Recipe Ingredients
-// 2.
+// 1. Unit redering error in recipeView (Unit and Check Emoji, first char should be uppercase)
+// 2. Fix modal
+// 3. Display number of pages
+// 4. Ingredient validation before submiting
+// 5. Get nutrition data (https://spoonacular.com/food-api/docs#Get-Recipe-Nutrition-Widget)
 
 const controlRecipes = async function () {
   try {
@@ -73,6 +79,26 @@ const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
+const controlAddRecipe = async function (data) {
+  try {
+    addRecipeView.renderSpinner();
+    await model.uploadRecipe(data);
+
+    recipeView.render(model.state.recipe);
+    addRecipeView.renderMessage();
+    // Not update. Really want to a new bookmark
+    bookmarksView.render(model.state.bookmarks);
+
+    window.history.pushState(null, "", `#${model.state.recipe.id}`);
+
+    setTimeout(function () {
+      addRecipeView.toggleWindow();
+    }, MODAL_CLOSE_SEC * 1000);
+  } catch (err) {
+    addRecipeView.renderError(err.message);
+  }
+};
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
@@ -80,6 +106,7 @@ const init = function () {
   searchView.addHandlerRender(controlSearchResults);
   paginationView.addHandlerRender(controlPagination);
   bookmarksView.addHandlerRender(controlBookmarks);
+  addRecipeView.addHandlerUpload(controlAddRecipe);
 };
 
 init();
