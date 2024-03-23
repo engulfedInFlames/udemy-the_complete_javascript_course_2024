@@ -132,9 +132,11 @@ class RecipeView extends View {
         </svg>
         ${quantity ? `<div class='recipe__quantity'>${quantity}</div>` : ""}
         <div class="recipe__description">
-        ${
-          unit ? `<span class="recipe__unit">${unit}</span>` : ""
-        } ${description}
+        ${unit ? `<span class="recipe__unit">${unit}</span>` : ""} ${
+      description
+        ? description.charAt(0).toUpperCase() + description.slice(1)
+        : ""
+    }
         </div>
       </li>`;
   }
