@@ -263,6 +263,7 @@ input[type="number"] {
 
 /* POP-UP */
 .popup {
+  outline: none;
   display: flex;
   flex-direction: column-reverse;
   justify-content: center;
@@ -296,16 +297,30 @@ input[type="number"] {
 
 .popup-detail__text {
   font-size: 1.5rem;
+  margin-right: 0.5rem;
   color: var(--color-light--2);
-  padding-right: 1.5rem;
 }
 
 .popup-detail__text::before {
   content: "";
   background-color: #00c46a;
   padding: 1rem 0.25rem;
-  margin-right: 1.25rem;
+  margin-right: 0.5rem;
   border-radius: 1px;
+}
+
+.popup-detail__edit {
+  transition: all 0.2s;
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.1rem 0.3rem;
+  font-size: 1.5rem;
+  border-radius: 3px;
+}
+
+.popup-detail__edit:hover {
+  color: var(--color-dark--2);
+  background-color: var(--color-light--2);
 }
 
 .popup.highlight {

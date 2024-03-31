@@ -1,19 +1,13 @@
 "use strict";
 
-// TODO
-// 1. Feature to edit a workout message
-// 2. Feature to sort workouts
-// 3. Feature to show all workouts
-
 class Workout {
   // If you want to make sure this code valid at least in ES6, you must have to declare this variables inside the constructor.
   date = new Date();
   // In real-world, use 3rd-party like UUID
   id = Date.now().toString(36) + Math.random().toString(36).substring(2);
+  text = "";
 
   constructor(coords, distance, duration) {
-    // this.date = ...
-    // this.id = ...
     this.coords = coords; // {lat, lng}
     this.distance = distance; // in km
     this.duration = duration; // in min
@@ -68,7 +62,8 @@ const inputDistance = document.querySelector(".form__input--distance");
 const inputDuration = document.querySelector(".form__input--duration");
 const inputCadence = document.querySelector(".form__input--cadence");
 const inputElevation = document.querySelector(".form__input--elevation");
-const btnDelete = document.querySelector(".btn--delete");
+const btnClear = document.querySelector(".btn--delete");
+const btnEdit = document.querySelector(".btn--edit");
 
 class App {
   MARKER_DEFAULT_HEIGHT = 36;
@@ -93,7 +88,7 @@ class App {
     form.addEventListener("submit", this._placeMarkerAndPanTo.bind(this));
     inputType.addEventListener("change", this._toggleElevationField.bind(this));
     containerWorkouts.addEventListener("click", this._clickWorkout.bind(this));
-    btnDelete.addEventListener("click", this._removeAllWorkouts.bind(this));
+    btnClear.addEventListener("click", this._removeAllWorkouts.bind(this));
     this._getLocalStorage();
   }
 
@@ -141,17 +136,35 @@ class App {
     const marker = new AdvancedMarkerElement({
       map: this.#map,
       position: workout.coords,
-      content: this._buildContent(workout?.type),
+      content: this._buildContent(workout.text, workout.type),
       gmpDraggable: true,
     });
-    marker.addListener("click", (e) => {
-      this._panTo(marker.position);
-    });
+
     marker.id = workout.id;
 
-    if (!workout.hasOwnProperty("type")) return;
+    marker.addListener("click", this._clickEdit.bind(marker));
 
-    this.#markers.push(marker);
+    if (workout.hasOwnProperty("type")) this.#markers.push(marker);
+  }
+
+  _clickEdit(e) {
+    const btnEdit = e.domEvent.target.closest(".popup-detail__edit");
+    if (!btnEdit) return;
+
+    const newMsg = window.prompt("Enter new message:").trim();
+    if (!newMsg) return;
+
+    const data = JSON.parse(localStorage.getItem("workouts"));
+
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    const newData = data.map((w) => {
+      if (w.id === this.id) w.text = newMsg;
+      return w;
+    });
+
+    btnEdit.previousElementSibling.textContent = newMsg;
+    localStorage.setItem("workouts", JSON.stringify(newData));
   }
 
   _placeMarkerAndPanTo(e) {
@@ -232,20 +245,23 @@ class App {
       </li>
     `;
 
-    btnDelete.insertAdjacentHTML("afterend", html);
+    btnClear.insertAdjacentHTML("afterend", html);
   }
 
   _panTo(latLng) {
     this.#map.panTo(latLng);
   }
 
-  _buildContent(type = "current") {
+  _buildContent(text = "", type = "current") {
     const content = document.createElement("div");
     content.classList.add("popup");
     content.innerHTML = `
-    <img class="popup__icon" src=${this._icons.defaultIcon} alt="Marker" aria-hidden="true">
+    <img class="popup__icon" src=${
+      this._icons.defaultIcon
+    } alt="Marker" aria-hidden="true">
     <div class="popup-detail">
-      <span class="popup-detail__text">${this._texts[type]}</span>
+      <span class="popup-detail__text">${text ? text : this._texts[type]}</span>
+      <span class="popup-detail__edit">✏️</span>
     </div>
     `;
 
@@ -336,11 +352,9 @@ class App {
   _getLocalStorage() {
     const data = JSON.parse(localStorage.getItem("workouts"));
 
-    if (!data) return;
+    if (!Array.isArray(data) || data.length === 0) return;
 
-    this.#workouts = data;
-
-    this.#workouts.forEach((w) => {
+    this.#workouts = data.map((w) => {
       const _w =
         w.type === "running"
           ? Object.assign(
@@ -353,6 +367,7 @@ class App {
             );
       this._renderWorkout(_w);
       this._placeMarker(_w);
+      return _w;
     });
   }
 
