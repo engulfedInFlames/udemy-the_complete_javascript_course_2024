@@ -137,7 +137,7 @@ class App {
       map: this.#map,
       position: workout.coords,
       content: this._buildContent(workout.text, workout.type),
-      gmpDraggable: true,
+      // gmpDraggable: true,
     });
 
     marker.id = workout.id;
@@ -196,8 +196,7 @@ class App {
     const type = inputType.value;
     const distance = +inputDistance.value;
     const duration = +inputDuration.value;
-    const metric =
-      type === "running" ? +inputCadence.value : +inputElevation.value;
+    const metric = type === "running" ? +inputCadence.value : +inputElevation.value;
 
     if (!validatePositiveNumbers(distance, duration, metric)) {
       alert("The input must be a positive number");
@@ -256,12 +255,10 @@ class App {
     const content = document.createElement("div");
     content.classList.add("popup");
     content.innerHTML = `
-    <img class="popup__icon" src=${
-      this._icons.defaultIcon
-    } alt="Marker" aria-hidden="true">
+    <img class="popup__icon" src=${this._icons.defaultIcon} alt="Marker" aria-hidden="true">
     <div class="popup-detail">
       <span class="popup-detail__text">${text ? text : this._texts[type]}</span>
-      <span class="popup-detail__edit">✏️</span>
+      ${type === "current" ? "" : "<span class='popup-detail__edit'>✏️</span>"}
     </div>
     `;
 
@@ -341,11 +338,7 @@ class App {
   }
 
   _clearInputValues() {
-    inputDistance.value =
-      inputDuration.value =
-      inputCadence.value =
-      inputElevation.value =
-        "";
+    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = "";
   }
 
   // HANDLE LOCAL STORAGE
@@ -357,14 +350,8 @@ class App {
     this.#workouts = data.map((w) => {
       const _w =
         w.type === "running"
-          ? Object.assign(
-              new Running(w.coords, w.distance, w.duration, w.cadence),
-              w
-            )
-          : Object.assign(
-              new Cycling(w.coords, w.distance, w.duration, w.elevation),
-              w
-            );
+          ? Object.assign(new Running(w.coords, w.distance, w.duration, w.cadence), w)
+          : Object.assign(new Cycling(w.coords, w.distance, w.duration, w.elevation), w);
       this._renderWorkout(_w);
       this._placeMarker(_w);
       return _w;

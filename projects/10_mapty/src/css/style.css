@@ -285,15 +285,17 @@ input[type="number"] {
   overflow: hidden;
   display: flex;
   align-items: center;
+  padding-right: 0.5rem;
   height: 3rem;
   background-color: var(--color-dark--2);
   border-radius: 4px;
-  transition: all 0.2s ease-in;
+  transition: all 0.15s;
+  backface-visibility: hidden;
 }
 
-/* .popup-detail:hover {
+.popup-detail:hover {
   transform: scale(1.05) translateY(-0.75rem);
-} */
+}
 
 .popup-detail__text {
   font-size: 1.5rem;
@@ -313,7 +315,7 @@ input[type="number"] {
   transition: all 0.2s;
   display: inline-block;
   margin-right: 0.5rem;
-  padding: 0.1rem 0.3rem;
+  padding: 0.1rem 0;
   font-size: 1.5rem;
   border-radius: 3px;
 }
