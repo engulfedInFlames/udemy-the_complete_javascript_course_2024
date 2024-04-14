@@ -8,14 +8,11 @@ import paginationView from "./views/paginationView.js";
 import bookmarksView from "./views/bookmarksView.js";
 import AddRecipeView from "./views/addRecipeView.js";
 import addRecipeView from "./views/addRecipeView.js";
-import { MODAL_CLOSE_SEC } from "./config.js";
 
 const { render } = require("sass");
 
 // https://forkify-api.herokuapp.com/v2
-// To fix
-// 1. Unit redering error in recipeView (Unit and Check Emoji, first char should be uppercase)
-// 2. Fix modal
+
 // 3. Display number of pages
 // 4. Ingredient validation before submiting
 // 5. Get nutrition data (https://spoonacular.com/food-api/docs#Get-Recipe-Nutrition-Widget)
