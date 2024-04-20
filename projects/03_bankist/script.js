@@ -74,7 +74,46 @@ let currentAccount,
   sorted = false,
   timer;
 
+const formatTime = (date, locale = "en-US", isDatetime = false) => {
+  const defaultOptions = {
+    weekday: "short",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  };
+
+  const options = isDatetime
+    ? {
+        ...defaultOptions,
+        dayPeriod: "narrow",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }
+    : defaultOptions;
+
+  return new Intl.DateTimeFormat(locale, options).format(date);
+};
+
+const formatMovementTime = (date, locale) => {
+  const daysPassed = Math.floor((new Date() - date) / (24 * 60 * 60 * 1000));
+
+  if (daysPassed === 0) return "today";
+  if (daysPassed === 1) return "yesterday";
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+  return formatTime(date, locale, false);
+};
+
+const formatCurrency = (value, locale = "en-US", currency = "USD") =>
+  new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(value);
+
+const calcDisplayBalance = (movements) => movements.reduce((acc, cur) => acc + cur, 0);
+
 const displayMovements = (acc, sort = false) => {
+  console.log(acc);
   containerMovements.innerHTML = "";
   const movements = sort ? [...acc.movements].sort((a, b) => a - b) : acc.movements;
 
@@ -95,8 +134,6 @@ const displayMovements = (acc, sort = false) => {
     containerMovements.insertAdjacentHTML("afterbegin", html);
   });
 };
-
-const calcDisplayBalance = (movements) => movements.reduce((acc, cur, i) => acc + cur, 0);
 
 const displayBalance = (acc) => {
   acc.balance = calcDisplayBalance(acc.movements);
@@ -120,60 +157,8 @@ const displayCurrentTime = (locale = "en-US") => {
   labelDate.textContent = formatTime(new Date(), locale, true);
 };
 
-const formatTime = (date, locale = "en-US", isDatetime = false) => {
-  const defaultOptions = {
-    weekday: "short",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  };
-
-  const options = isDatetime
-    ? {
-        ...defaultOptions,
-        dayPeriod: "narrow",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }
-    : defaultOptions;
-
-  return new Intl.DateTimeFormat(locale, options).format(date);
-  // const pad = (num) => num.toString().padStart(2, "0");
-  // const year = date.getFullYear();
-  // const month = pad(date.getMonth() + 1);
-  // const day = pad(date.getDate());
-  // const hour = pad(date.getHours());
-  // const min = pad(date.getMinutes());
-
-  // const dateString = `${day}/${month}/${year}`;
-  // const timeString = `${hour}:${min}`;
-
-  // return isDatetime ? `${dateString}, ${timeString}` : dateString;
-};
-
-const formatMovementTime = (date, locale) => {
-  const daysPassed = Math.floor((new Date() - date) / (24 * 60 * 60 * 1000));
-
-  if (daysPassed === 0) return "today";
-  if (daysPassed === 1) return "yesterday";
-  if (daysPassed <= 7) return `${daysPassed} days ago`;
-  return formatTime(date, locale, false);
-};
-
-const formatCurrency = (value, locale = "en-US", currency = "USD") =>
-  new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency,
-  }).format(value);
-
 const clearInputValues = (...inputs) => {
   inputs.forEach((input) => (input.value = ""));
-};
-
-const updateLogoutTimer = () => {
-  clearInterval(timer);
-  timer = setLogoutTimer(loginDuration, labelTimer);
 };
 
 const updateUI = (acc) => {
@@ -190,10 +175,14 @@ const setTimer = (duration, display, onExpire) => {
     const seconds = format(time % 60);
     display.textContent = `${minutes}:${seconds}`;
   };
+
+  updateDisplay(duration);
+
   const tick = () => {
     if (duration >= 0) {
       updateDisplay(duration);
-    } else {
+    }
+    if (duration < 0) {
       clearInterval(timer);
       display.textContent = "00:00";
       if (typeof onExpire === "function") onExpire();
@@ -201,7 +190,6 @@ const setTimer = (duration, display, onExpire) => {
     duration--;
   };
 
-  updateDisplay(duration);
   const timer = setInterval(tick, 1000);
   return timer;
 };
@@ -213,6 +201,11 @@ const setLogoutTimer = (duration, display) => {
   };
 
   return setTimer(duration, display, onExpire);
+};
+
+const updateLogoutTimer = () => {
+  clearInterval(timer);
+  timer = setLogoutTimer(loginDuration, labelTimer);
 };
 
 const handleLogin = (e) => {
@@ -237,40 +230,45 @@ const handleLogin = (e) => {
   alert("Invalid username or password");
 };
 
-btnLogin.addEventListener("click", handleLogin);
-
-btnTransfer.addEventListener("click", (e) => {
+const handleTransfer = (e) => {
   e.preventDefault();
+
   const receiver = inputTransferTo.value;
   const amount = Number(inputTransferAmount.value);
   clearInputValues(inputTransferTo, inputTransferAmount);
 
   const receiverAccount = accounts.find((acc) => acc.owner === receiver);
 
-  if (
-    amount > 0 &&
-    currentAccount.balance >= amount &&
-    receiverAccount &&
-    receiver !== currentAccount.owner
-  ) {
-    currentAccount.movements.push(-amount);
-    receiverAccount.movements.push(amount);
-
-    const now = new Date().toISOString();
-    currentAccount.movementsDates.push(now);
-    receiverAccount.movementsDates.push(now);
-
-    updateLogoutTimer();
-
-    updateUI(currentAccount);
-    alert("Succeeded to transfer🚀");
+  if (isNaN(amount) || amount <= 0) {
+    alert("Failed to transfer: Invalid amount.");
     return;
   }
-  alert("Failed to transfer❌");
-});
 
-btnLoan.addEventListener("click", (e) => {
+  if (currentAccount.balance < amount) {
+    alert("Failed to transfer: Not enough balance.");
+    return;
+  }
+
+  if (!receiverAccount || receiver === currentAccount.owner) {
+    alert("Failed to transfer: Invalid receiver.");
+    return;
+  }
+
+  currentAccount.movements.push(-amount);
+  receiverAccount.movements.push(amount);
+
+  const now = new Date().toISOString();
+  currentAccount.movementsDates.push(now);
+  receiverAccount.movementsDates.push(now);
+
+  updateLogoutTimer();
+  updateUI(currentAccount);
+  alert("Succeeded to transfer🚀");
+};
+
+const handleLoan = (e) => {
   e.preventDefault();
+
   const amount = Math.floor(inputLoanAmount.value);
   clearInputValues(inputLoanAmount);
 
@@ -287,33 +285,47 @@ btnLoan.addEventListener("click", (e) => {
     return;
   }
   alert("Failed to execute load❌");
-});
+};
 
-btnClose.addEventListener("click", (e) => {
+const handleCloseAccount = (e) => {
   e.preventDefault();
+
   const username = inputCloseUsername.value;
   const pin = Number(inputClosePin.value);
   clearInputValues(inputCloseUsername, inputClosePin);
 
-  if (currentAccount && currentAccount.owner === username && currentAccount.pin === pin) {
-    const targetIndex = accounts.findIndex((acc) => acc === currentAccount);
-    accounts.splice(targetIndex, 1);
-    containerApp.style.opacity = 0;
+  const isValid = currentAccount?.owner === username && currentAccount?.pin === pin;
 
-    if (timer) clearInterval(timer);
-
-    alert("Succeeded to delete the account🚀");
+  if (!isValid) {
+    updateLogoutTimer();
+    alert("Failed to delete the account❌");
     return;
   }
 
-  updateLogoutTimer();
-  alert("Failed to delete the account❌");
-});
+  const targetIndex = accounts.findIndex((acc) => acc === currentAccount);
+  accounts.splice(targetIndex, 1);
+  containerApp.style.opacity = 0;
 
-btnSort.addEventListener("click", (e) => {
+  if (timer) clearInterval(timer);
+
+  alert("Succeeded to delete the account🚀");
+  return;
+};
+
+const handleSortMovements = (e) => {
   e.preventDefault();
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 
   updateLogoutTimer();
-});
+};
+
+btnLogin.addEventListener("click", handleLogin);
+
+btnTransfer.addEventListener("click", handleTransfer);
+
+btnLoan.addEventListener("click", handleLoan);
+
+btnClose.addEventListener("click", handleCloseAccount);
+
+btnSort.addEventListener("click", handleSortMovements);
