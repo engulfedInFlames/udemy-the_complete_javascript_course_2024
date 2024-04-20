@@ -132,10 +132,7 @@ const sectionObserverOpts = {
   threshold: 0.15,
 };
 
-const sectionObserver = new IntersectionObserver(
-  revealSection,
-  sectionObserverOpts
-);
+const sectionObserver = new IntersectionObserver(revealSection, sectionObserverOpts);
 
 allSections.forEach((sec) => {
   sectionObserver.observe(sec);
@@ -176,8 +173,7 @@ const activateSlider = () => {
   let curSlide = 0;
 
   const createDots = () => {
-    const createDot = (i) =>
-      `<button class="dots__dot" data-slide="${i}"></button>`;
+    const createDot = (i) => `<button class="dots__dot" data-slide="${i}"></button>`;
     slides.forEach((_, i) => {
       dotContainer.insertAdjacentHTML("beforeend", createDot(i));
     });
@@ -187,15 +183,11 @@ const activateSlider = () => {
     document
       .querySelectorAll(".dots__dot")
       .forEach((dot) => dot.classList.remove("dots__dot--active"));
-    document
-      .querySelector(`.dots__dot[data-slide="${slide}"]`)
-      .classList.add("dots__dot--active");
+    document.querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add("dots__dot--active");
   };
 
   const showSlide = (slide) => {
-    slides.forEach(
-      (s, i) => (s.style.transform = `translateX(${(i - slide) * 100}%)`)
-    );
+    slides.forEach((s, i) => (s.style.transform = `translateX(${(i - slide) * 100}%)`));
     activateDot(slide);
   };
 

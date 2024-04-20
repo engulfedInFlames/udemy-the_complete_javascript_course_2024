@@ -1,7 +1,7 @@
 "use strict";
 
 const account1 = {
-  owner: "Jonas Schmedtmann",
+  owner: "Jonas",
   movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
   interestRate: 1.2, // %
   pin: 1111,
@@ -21,7 +21,7 @@ const account1 = {
 };
 
 const account2 = {
-  owner: "Jessica Davis",
+  owner: "Jessica",
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
@@ -42,7 +42,7 @@ const account2 = {
 
 const accounts = [account1, account2];
 
-/////////////////////////////////////////////////
+////////////////////////
 // Elements
 const labelWelcome = document.querySelector(".welcome");
 const labelDate = document.querySelector(".date");
@@ -76,17 +76,12 @@ let currentAccount,
 
 const displayMovements = (acc, sort = false) => {
   containerMovements.innerHTML = "";
-  const movements = sort
-    ? [...acc.movements].sort((a, b) => a - b)
-    : acc.movements;
+  const movements = sort ? [...acc.movements].sort((a, b) => a - b) : acc.movements;
 
   movements.forEach((mov, i) => {
     const { locale, currency } = acc;
     const type = mov > 0 ? "deposit" : "withdrawal";
-    const timeFormatted = formatMovementTime(
-      new Date(acc.movementsDates[i]),
-      locale
-    );
+    const timeFormatted = formatMovementTime(new Date(acc.movementsDates[i]), locale);
     const movFormatted = formatCurrency(mov, locale, currency);
     const html = `
       <div class="movements__row">
@@ -101,8 +96,7 @@ const displayMovements = (acc, sort = false) => {
   });
 };
 
-const calcDisplayBalance = (movements) =>
-  movements.reduce((acc, cur, i) => acc + cur, 0);
+const calcDisplayBalance = (movements) => movements.reduce((acc, cur, i) => acc + cur, 0);
 
 const displayBalance = (acc) => {
   acc.balance = calcDisplayBalance(acc.movements);
@@ -112,64 +106,18 @@ const displayBalance = (acc) => {
 
 const displaySummary = (acc) => {
   // Don't overuse chaining methods
-  const incomes = acc.movements
-    .filter((mov) => mov > 0)
-    .reduce((acc, mov) => acc + mov, 0);
+  const incomes = acc.movements.filter((mov) => mov > 0).reduce((acc, mov) => acc + mov, 0);
   const outcomes = Math.abs(
     acc.movements.filter((mov) => mov < 0).reduce((acc, mov) => acc + mov, 0)
   );
   const interest = incomes * (acc.interestRate / 100);
-  labelSumIn.textContent = `${formatCurrency(
-    incomes,
-    acc.locale,
-    acc.currency
-  )}`;
-  labelSumOut.textContent = `${formatCurrency(
-    outcomes,
-    acc.locale,
-    acc.currency
-  )}`;
-  labelSumInterest.textContent = `${formatCurrency(
-    interest,
-    acc.locale,
-    acc.currency
-  )}`;
+  labelSumIn.textContent = `${formatCurrency(incomes, acc.locale, acc.currency)}`;
+  labelSumOut.textContent = `${formatCurrency(outcomes, acc.locale, acc.currency)}`;
+  labelSumInterest.textContent = `${formatCurrency(interest, acc.locale, acc.currency)}`;
 };
 
 const displayCurrentTime = (locale = "en-US") => {
   labelDate.textContent = formatTime(new Date(), locale, true);
-};
-
-const setTimer = (duration, display, onExpire) => {
-  const format = (time) => parseInt(time, 10).toString().padStart(2, "0");
-  const updateDisplay = (time) => {
-    const minutes = format(time / 60);
-    const seconds = format(time % 60);
-    display.textContent = `${minutes}:${seconds}`;
-  };
-  const tick = () => {
-    if (duration >= 0) {
-      updateDisplay(duration);
-    } else {
-      clearInterval(timer);
-      display.textContent = "00:00";
-      if (typeof onExpire === "function") onExpire();
-    }
-    duration--;
-  };
-
-  updateDisplay(duration);
-  const timer = setInterval(tick, 1000);
-  return timer;
-};
-
-const setLogoutTimer = (duration, display) => {
-  const onExpire = () => {
-    labelWelcome.textContent = "Log in to get started";
-    containerApp.style.opacity = 0;
-  };
-
-  return setTimer(duration, display, onExpire);
 };
 
 const formatTime = (date, locale = "en-US", isDatetime = false) => {
@@ -235,7 +183,39 @@ const updateUI = (acc) => {
   displayCurrentTime(acc.locale);
 };
 
-btnLogin.addEventListener("click", (e) => {
+const setTimer = (duration, display, onExpire) => {
+  const format = (time) => parseInt(time, 10).toString().padStart(2, "0");
+  const updateDisplay = (time) => {
+    const minutes = format(time / 60);
+    const seconds = format(time % 60);
+    display.textContent = `${minutes}:${seconds}`;
+  };
+  const tick = () => {
+    if (duration >= 0) {
+      updateDisplay(duration);
+    } else {
+      clearInterval(timer);
+      display.textContent = "00:00";
+      if (typeof onExpire === "function") onExpire();
+    }
+    duration--;
+  };
+
+  updateDisplay(duration);
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+const setLogoutTimer = (duration, display) => {
+  const onExpire = () => {
+    labelWelcome.textContent = "Log in to get started";
+    containerApp.style.opacity = 0;
+  };
+
+  return setTimer(duration, display, onExpire);
+};
+
+const handleLogin = (e) => {
   e.preventDefault();
   const username = inputLoginUsername.value;
   const pin = Number(inputLoginPin.value);
@@ -244,9 +224,7 @@ btnLogin.addEventListener("click", (e) => {
   currentAccount = accounts.find((acc) => acc.owner === username);
 
   if (currentAccount?.pin === pin) {
-    labelWelcome.textContent = `Welcome back, ${
-      currentAccount.owner.split(" ")[0]
-    }`;
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner}`;
     containerApp.style.opacity = 1;
 
     if (timer) clearInterval(timer);
@@ -257,7 +235,9 @@ btnLogin.addEventListener("click", (e) => {
   }
 
   alert("Invalid username or password");
-});
+};
+
+btnLogin.addEventListener("click", handleLogin);
 
 btnTransfer.addEventListener("click", (e) => {
   e.preventDefault();
@@ -294,10 +274,7 @@ btnLoan.addEventListener("click", (e) => {
   const amount = Math.floor(inputLoanAmount.value);
   clearInputValues(inputLoanAmount);
 
-  if (
-    amount > 0 &&
-    currentAccount.movements.some((mov) => mov >= amount * 0.1)
-  ) {
+  if (amount > 0 && currentAccount.movements.some((mov) => mov >= amount * 0.1)) {
     currentAccount.movements.push(amount);
 
     const now = new Date().toISOString();
@@ -318,11 +295,7 @@ btnClose.addEventListener("click", (e) => {
   const pin = Number(inputClosePin.value);
   clearInputValues(inputCloseUsername, inputClosePin);
 
-  if (
-    currentAccount &&
-    currentAccount.owner === username &&
-    currentAccount.pin === pin
-  ) {
+  if (currentAccount && currentAccount.owner === username && currentAccount.pin === pin) {
     const targetIndex = accounts.findIndex((acc) => acc === currentAccount);
     accounts.splice(targetIndex, 1);
     containerApp.style.opacity = 0;
@@ -344,178 +317,3 @@ btnSort.addEventListener("click", (e) => {
 
   updateLogoutTimer();
 });
-
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES
-
-// ---- ---- Convert and Check Numbers
-/*
-// Binary
-console.log(23 === 23.0);
-console.log(0.1 + 0.2 === 0.3);
-
-// Conversion
-console.log(Number("23"));
-console.log(+"23");
-
-// Parsing
-console.log(Number.parseInt("30px", 10));
-console.log(Number.parseInt("e23", 10));
-console.log(Number.parseInt("30px", 2));
-console.log(Number.parseFloat("   2.5rem   "));
-
-// Check if value is NaN
-Number.isNaN;
-
-// Check if value is number
-Number.isFinite;
-Number.isInteger;
-*/
-
-// ---- ---- Math and Rounding ---- ----
-/*
-console.log(8 ** (1 / 3));
-// Math: max, min, PI, random, round, ceil, floor, trunc
-// randomInt
-
-// Rounding decimals
-console.log((2.7).toFixed(0));
-console.log((2.7).toFixed(3));
-console.log((2.34567).toFixed(3));
-*/
-
-// ---- ---- The Remainder Operator ---- ----
-/*
-const isEven = (n) => n % 2 === 0;
-*/
-
-// ---- ---- Numeric Sepeartor ---- ----
-/* 
-const diameter = 287_460_000_000;
-console.log(diameter);
-
-const price = 345_99;
-console.log(price);
-
-// Max Integer
-const theBiggestNumber = 2**53-1;
-console.log(theBiggestNumber);
-console.log(Number.MAX_SAFE_INTEGER);
-
-// Big Integer
-console.log(12343458354090329524n);
-console.log(BigInt(12343458354090329524));
-
-// Operations: Only with the same Big Int type  
-console.log(324864783659689n * 100000n);
-console.log(20n>15); // true
-
-// console.log(Math.sqrt(16n)) // doesn't work
-console.log(20n === 20); // false
-console.log(typeof 20n);
-
-// Divisions
-console.log(10n/3n);
-console.log(10/3);
-*/
-
-// ---- ---- Dates ---- ----
-/* 
-const now = new Date();
-console.log(now);
-
-console.log(new Date("Aug 02 2020 18:05:41"));
-console.log(new Date("December 24, 2015"));
-console.log(new Date(2037, 10, 19, 15, 23, 5));
-
-console.log(new Date(0));
-console.log(new Date(3 * 24 * 60 * 60 * 1000));
-*/
-
-/*
-// Working with dates
-console.log(new Date());
-console.log(Date.now());
-
-const future = new Date(2037, 10, 19,15,23);
-console.log(future);
-console.log(future.getFullYear()) // ❌ getYear()
-console.log(future.getMonth());
-console.log(future.getDate());
-console.log(future.getDay());
-console.log(future.getHours());
-console.log(future.getMinutes());
-console.log(future.getSeconds());
-console.log(future.toISOString());
-console.log(future.getTime());
-
-future.setFullYear(2040);
-console.log(future);
-*/
-
-// ---- ---- Operation with Date ---- ----
-/*
-const future = new Date(2037, 10, 19, 15, 23);
-console.log(+future);
-
-const date1 = new Date(2037, 10, 19, 16, 7);
-const date2 = new Date(2037, 11, 2, 15, 23);
-
-const calcDaysPassed = (date1, date2) =>
-  Math.abs(date2 - date1) / (1000 * 60 * 60 * 24);
-console.log(calcDaysPassed(date1, date2));
-*/
-
-// ---- ---- Inernationalizing Dates (Intl) ---- ----
-// Experimenting API
-/*
-const now = new Date();
-const options = {
-  hour: "numeric",
-  minute: "numeric",
-  day: "numeric",
-  month: "numeric", // long
-  year: "numeric",
-  weekday: "numeric", // long
-};
-const locale = navigator.language;
-console.log(locale);
-
-console.log(new Intl.DateTimeFormat("en-US", options).format(now));
-console.log(new Intl.DateTimeFormat("ar-SY", options).format(now));
-console.log(new Intl.DateTimeFormat(locale, options).format(now));
-*/
-
-// ---- ---- Inernationalizing Number (Intl) ---- ----
-/*
-const num = 3884764.23;
-const options = {
-  style: "unit", // percent, currency
-  unit: "mile-per-hour", // "celsius"
-  currency: "EUR",
-  // useGrouping: false,
-};
-
-console.log("US: ", new Intl.NumberFormat("en-US").format(num));
-console.log("Germany: ", new Intl.NumberFormat("de-DE").format(num));
-console.log("Syria: ", new Intl.NumberFormat("ar-SY").format(num));
-console.log("Browser: ", new Intl.NumberFormat(navigator.language).format(num));
-*/
-
-// ---- ---- Timers ---- ----
-// setTimeout
-/* 
-const ingredients = ["olives", "pepperoni", "spinach"];
-const pizzaTimer = setTimeout(
-  (ing1, ing2, ing3) =>
-    console.log(`Here is your pizza with ${ing1}, ${ing2} and ${ing3}`),
-  3000,
-  ...ingredients
-);
-
-if (ingredients.includes("spinach")) clearTimeout(pizzaTimer);
-
-
-// setInterval
-*/
