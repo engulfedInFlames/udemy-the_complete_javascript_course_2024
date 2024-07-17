@@ -1,55 +1,40 @@
-// ---- ---- document ---- ----
-// console.log(document.documentElement);
-// console.log(document.head);
-// console.log(document.body);
+"use strict";
 
-// ---- ---- Selecting Elements ---- ----
-// querySelector, querySelectorAll
-// getElementById, getElementsByTagName
-// getElementsByClassName
+console.log("////////// Manipulate DOM //////////");
+(() => {
+  // Document
+  // console.log(document.documentElement);
+  // console.log(document.head);
+  // console.log(document.body);
 
-// ---- ---- Creating and Inserting Elements
-/* 
-const header = document.querySelector("header");
-const cookieMessage = document.createElement("div");
-cookieMessage.classList.add("cookie-message");
-cookieMessage.innerHTML = `We use cookied for improved functionality and analytics. <button class="btn btn--close-cookie">Got it!</button>`;
+  // Create and Inserte Elements
+  const header = document.querySelector("header");
+  const cookieMessage = document.createElement("div");
+  cookieMessage.classList.add("cookie-message");
+  cookieMessage.innerHTML = `We use cookied for improved functionality and analytics. <button class="btn btn--close-cookie">Got it!</button>`;
 
-cookieMessage.style.backgroundColor = "#37383d";
-cookieMessage.style.width = "120%";
+  cookieMessage.style.backgroundColor = "#37383d";
+  cookieMessage.style.width = "120%";
 
-// Create a child
-header.prepend(cookieMessage); 
-// header.append(cookieMessage.cloneNode(true));
-// Create a sibling
-// header.before(cookieMessage)
-// header.after(cookieMessage)
+  // Create a child
+  header.prepend(cookieMessage);
+  // header.append(cookieMessage.cloneNode(true));
 
-cookieMessage.style.height =
-  Number.parseFloat(getComputedStyle(cookieMessage).height, 10) + 24 + "px";
+  // Create a sibling
+  // header.before(cookieMessage)
+  // header.after(cookieMessage)
 
-// Delete elements
-document.querySelector(".btn--close-cokie").addEventListener("click", () => {
-  cookieMessage.remove();
-})
-*/
+  cookieMessage.style.height =
+    Number.parseFloat(getComputedStyle(cookieMessage).height, 10) + 24 + "px";
 
-// ---- ---- Styles ---- ----
-cookieMessage.style.color = "#37383d";
-cookieMessage.style.width = "120%";
+  // Delete elements
+  document.querySelector(".btn--close-cokie").addEventListener("click", () => {
+    cookieMessage.remove();
+  });
+  document.documentElement.style.setProperty("--color-primary", "orangered");
+})();
 
-// At this point, you can only access to the inline style. To access to the actual style in browser, using getComputedStyle is a good option.
-// console.log(getComputedStyle(cookieMessage).height);
-
-cookieMessage.style.height =
-  Number.parseFloat(getComputedStyle(cookieMessage).height, 10) + 24 + "px";
-
-document.documentElement.style.setProperty("--color-primary", "orangered");
-
-// ---- ---- Data Attributes ---- ----
-// data-version-number
-console.log(logo.dataset.versionNumber);
-
+console.log("////////// Scroll to Section //////////");
 // ---- ---- Scrolling ---- ----
 btnScrollTo.addEventListener("click", (e) => {
   // const s1coords = section1.getBoundingClientRect();
@@ -75,10 +60,8 @@ btnScrollTo.addEventListener("click", (e) => {
 
 // ---- ---- Bubbling and Capturing ---- ----
 // rgb(255, 255, 255)
-const randomInt = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1) + min);
-const randomColor = () =>
-  `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
+const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+const randomColor = () => `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
 
 // Event Propagation
 document.querySelector(".nav__link").addEventListener("click", function (e) {
@@ -278,10 +261,7 @@ const sectionObserverOpts = {
   threshold: 0.15,
 };
 
-const sectionObserver = new IntersectionObserver(
-  revealSection,
-  sectionObserverOpts
-);
+const sectionObserver = new IntersectionObserver(revealSection, sectionObserverOpts);
 
 allSections.forEach((sec) => {
   sectionObserver.observe(sec);
@@ -299,8 +279,7 @@ const activateSlider = () => {
   let curSlide = 0;
 
   const createDots = () => {
-    const createDot = (i) =>
-      `<button class="dots__dot" data-slide="${i}"></button>`;
+    const createDot = (i) => `<button class="dots__dot" data-slide="${i}"></button>`;
     slides.forEach((_, i) => {
       dotContainer.insertAdjacentHTML("beforeend", createDot(i));
     });
@@ -310,15 +289,11 @@ const activateSlider = () => {
     document
       .querySelectorAll(".dots__dot")
       .forEach((dot) => dot.classList.remove("dots__dot--active"));
-    document
-      .querySelector(`.dots__dot[data-slide="${slide}"]`)
-      .classList.add("dots__dot--active");
+    document.querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add("dots__dot--active");
   };
 
   const showSlide = (slide) => {
-    slides.forEach(
-      (s, i) => (s.style.transform = `translateX(${(i - slide) * 100}%)`)
-    );
+    slides.forEach((s, i) => (s.style.transform = `translateX(${(i - slide) * 100}%)`));
     activateDot(slide);
   };
 
